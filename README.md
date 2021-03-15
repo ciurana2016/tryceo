@@ -5,7 +5,7 @@ Interview code.
 1. Python version 3.8.3+
 2. Internet connection to run the tests and connect to the database.
 
-## Installation and runing.
+## Installation and running
 Install all needed packages:
 ```
 python3 -m venv env
