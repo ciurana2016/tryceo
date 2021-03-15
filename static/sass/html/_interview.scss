@@ -1,0 +1,68 @@
+/*
+    General styles of the page,
+    The toggle to show and hide the map or the table,
+    Basic size of the map and table sections.
+*/
+
+/* Easter-egg */
+body::after {
+    content: "Please select map or table.";
+    padding: $p;
+    position: fixed;
+    top: 1px;
+    z-index: -1;
+}
+
+/* Toggle-show the map and the table */
+section#map_table_toggle {
+    background: $light_pale;
+    border: 1px solid $black;
+    bottom: $p;
+    display: flex;
+    left: $p;
+    position: fixed;
+    z-index: 10;
+    label {
+        align-items: center;
+        display: flex;
+    }
+    svg.toggle_icon {
+        padding: $p/2;
+        fill: $pale;
+    }
+    // Toggle items
+    input[type="checkbox"] {
+        display: none;
+    }
+    label[id*="toggle"] {
+        cursor: pointer
+    }
+    #toggle_map:checked {
+        & ~  #_toggle_map svg.toggle_icon{
+            fill: $accent;
+        }
+    }
+    #toggle_table:checked {
+        & ~  #_toggle_table svg.toggle_icon{
+            fill: $accent;
+        }
+    }
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    section#map,
+    section#table {
+        height: 100vh;
+        flex-grow: 1;
+        .title {
+            font-size: 20px;
+            font-family: sans-serif;
+            font-weight: 300;
+            letter-spacing: 1px;
+            padding: $p;
+        }
+    }
+}

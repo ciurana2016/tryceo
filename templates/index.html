@@ -1,0 +1,119 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tryceo</title>
+
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Show/hide map or table -->
+    <section id="map_table_toggle">
+        <input type="checkbox" checked="checked" id="toggle_map"/>
+        <label for="toggle_map" id="_toggle_map">
+            <svg class="toggle_icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+        </label>
+        <input type="checkbox" checked="checked" id="toggle_table">
+        <label for="toggle_table" id="_toggle_table">
+            <svg class="toggle_icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </label>
+    </section>
+
+    <main>
+        <!-- Map -->
+        <section id="map">
+            MAP
+        </section>
+        <!-- Table -->
+        <section id="table">
+            <div class="select_region">
+                <p class="title">Select region:</p>
+                <ul class="regions">
+                    <li class="region">
+                        <input type="checkbox" id="checkbox_Barcelona">
+                        <label for="checkbox_Barcelona" id="_checkbox_Barcelona">
+                            <span class="name">Barcelona</span>
+                            <div class="checkbox_background">
+                            <div class="checkbox_ball"></div>
+                            </div>
+                        </label>
+                    </li>
+                    <li class="region">
+                        <input type="checkbox" id="checkbox_Madrid">
+                        <label for="checkbox_Madrid" id="_checkbox_Madrid">
+                            <span class="name">Madrid</span>
+                            <div class="checkbox_background">
+                            <div class="checkbox_ball"></div>
+                            </div>
+                        </label>
+                    </li>
+                    <li class="region">
+                        <input type="checkbox" id="checkbox_CostaDelSol">
+                        <label for="checkbox_CostaDelSol" id="_checkbox_CostaDelSol">
+                            <span class="name">Costa del Sol</span>
+                            <div class="checkbox_background">
+                            <div class="checkbox_ball"></div>
+                            </div>
+                        </label>
+                    </li>
+                    <li class="region">
+                        <input type="checkbox" id="checkbox_CostaBlanca">
+                        <label for="checkbox_CostaBlanca" id="_checkbox_CostaBlanca">
+                            <span class="name">Costa Blanca</span>
+                            <div class="checkbox_background">
+                            <div class="checkbox_ball"></div>
+                            </div>
+                        </label>
+                    </li>
+                    <li class="region">
+                        <input type="checkbox" id="checkbox_All">
+                        <label for="checkbox_All" id="_checkbox_All">
+                            <span class="name">All</span>
+                            <div class="checkbox_background">
+                            <div class="checkbox_ball"></div>
+                            </div>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <div class="review_box">
+                <div class="header">
+                    <div class="title">Reviews of ==Hotel name==</div>
+                </div>
+                <ul>
+                    <li>Review ...</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- TODO move out of here -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            /* Toggle map or table */
+            map_checkbox = document.querySelector('#toggle_map');
+            map_element = document.querySelector('#map');
+            table_checkbox = document.querySelector('#toggle_table');
+            table_element = document.querySelector('#table');
+
+            make_toggle_item = (checkbox, toggle_element) => {
+                let check_state = true;
+                checkbox.onclick = () => {
+                    check_state = check_state ? false : true;
+                    if (check_state) {
+                        toggle_element.style.display = 'flex';
+                    } else {
+                        toggle_element.style.display = 'none';
+                    }
+                };
+            };
+            make_toggle_item(map_checkbox, map_element);
+            make_toggle_item(table_checkbox, table_element);
+        });
+    </script>
+
+</body>
+</html>{% endspaceless %}

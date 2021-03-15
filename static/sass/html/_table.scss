@@ -1,0 +1,22 @@
+/*
+    TABLE SECTION
+*/
+
+main section#table {
+    background: $black;
+    display: flex;
+    color: white;
+    flex-direction: column;
+}
+
+div.select_region {
+    width: 100%;
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        li {
+            box-sizing: border-box;
+            width: 50%;
+        }
+    }
+}
