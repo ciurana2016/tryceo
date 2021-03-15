@@ -20,3 +20,19 @@ class DatabaseConnection(object):
 
     def disconnect(self):
         self.cnx.close()
+
+    def test_query(self, query_string:str) -> int:
+        # Just for test purposes
+        self.cursor = self.cnx.cursor()
+        self.cursor.execute(query_string)
+        response = self.cursor.fetchone()[0]
+        self.cursor.close()
+        return response
+
+    def query_hotel_data(self):
+        # Query the hotel data we need to populate our own
+        # database with the filtered results.
+        self.cursor = self.cnx.cursor()
+
+        self.cursor.close()
+
