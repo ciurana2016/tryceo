@@ -21,6 +21,7 @@ Run (127.0.0.1:8000):
 ## Tests
 Please run tests before and after any change.
 ```
+./manage.py test
 ```
 
 ## Sass
