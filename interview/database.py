@@ -37,14 +37,17 @@ class DatabaseConnection(object):
 
         query = (
         """
-            SELECT hotel_id, hotel_name, hotel_address, hotel_url, vfm
+            SELECT country_area, hotel_id, hotel_name, hotel_address, hotel_url, vfm
             FROM hotel_info
         """
         )
         self.cursor.execute(query)
         data = []
-        for (hotel_id, hotel_name, hotel_address, hotel_url,vfm) in self.cursor:
+        for (country_area, hotel_id, hotel_name, hotel_address,
+            hotel_url, vfm
+        ) in self.cursor:
             data.append({
+                'country_area': country_area,
                 'hotel_id': hotel_id,
                 'hotel_name': hotel_name,
                 'hotel_address': hotel_address,
