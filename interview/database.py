@@ -25,9 +25,28 @@ FROM hotel_info as t1, (
         GROUP BY t2.hotel_id
         HAVING COUNT(t2.hotel_id) > 4
 ) as table_2
-WHERE t1.hotel_id = table_2.hotel_id
-LIMIT 10;
+WHERE t1.hotel_id = table_2.hotel_id;
+
 -- Fuck we have it
+    """
+    """
+    change reviews query
+SELECT t1.hotel_id, t1.review_date, t1.review_title, t1.positive_content,
+        t1.negative_content, t1.review_score, t1.UUID
+FROM hotel_reviews as t1, (
+        SELECT
+            t2.hotel_id
+        FROM
+            hotel_reviews as t2
+        GROUP BY t2.hotel_id
+        HAVING COUNT(t2.hotel_id) > 4
+) as table_2
+WHERE t1.hotel_id = table_2.hotel_id
+AND
+
+            t1.review_date >= '2018-01-01'
+            AND
+            t1.review_date <= '2019-01-01';
     """
 
 
