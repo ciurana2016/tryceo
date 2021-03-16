@@ -123,24 +123,18 @@ def filter_and_save_data():
     Hotel.objects.bulk_create(
         Hotel(**vals) for vals in d
     )
-    # print(Hotel.objects.all().count(), 'Hotels <<')
 
     # [2] Bulk create reviews
-    print('Start bulck reviews')
 
     # Extract the hotel_id to make the models and insert the
     # models into the reviews dataframe (this takes ~4 min)
-    h=0
     for hotel_id in reviews.hotel_id.unique():
-        print('Hotel ', h)
-        h+=1
         hotel = Hotel.objects.get(hotel_id=hotel_id)
         reviews['hotel_id'] =  np.where(
             reviews['hotel_id'] == hotel_id,
             hotel,
             reviews['hotel_id']
         )
-        # reviews['hotel_id'].loc[reviews['hotel_id'] == hotel_id] = hotel
 
     # Rename the columns to match models
     reviews.rename(columns={
@@ -150,10 +144,7 @@ def filter_and_save_data():
     }, inplace=True)
 
     # Bulk save the data
-    print('BULK CREATING...')
     d = reviews.to_dict('records')
     HotelReview.objects.bulk_create(
         HotelReview(**vals) for vals in d
     )
-
-    print('End bulck reviews')
