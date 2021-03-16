@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import mysql.connector as mysql
 
@@ -6,49 +7,6 @@ from .models import CountryArea, Hotel, HotelReview
 
 
 class DatabaseConnection(object):
-
-    """
-    change hotel query to without limit
-SELECT t1.country_area, t1.hotel_id, t1.hotel_name,
-    t1.hotel_address, t1.hotel_url, t1.vfm
-FROM hotel_info as t1, (
-        SELECT
-            t2.hotel_id
-        FROM
-            hotel_reviews as t2
-
-        WHERE
-            t2.review_date >= '2018-01-01'
-            AND
-            t2.review_date <= '2019-01-01'
-
-        GROUP BY t2.hotel_id
-        HAVING COUNT(t2.hotel_id) > 4
-) as table_2
-WHERE t1.hotel_id = table_2.hotel_id;
-
--- Fuck we have it
-    """
-    """
-    change reviews query
-SELECT t1.hotel_id, t1.review_date, t1.review_title, t1.positive_content,
-        t1.negative_content, t1.review_score, t1.UUID
-FROM hotel_reviews as t1, (
-        SELECT
-            t2.hotel_id
-        FROM
-            hotel_reviews as t2
-        GROUP BY t2.hotel_id
-        HAVING COUNT(t2.hotel_id) > 4
-) as table_2
-WHERE t1.hotel_id = table_2.hotel_id
-AND
-
-            t1.review_date >= '2018-01-01'
-            AND
-            t1.review_date <= '2019-01-01';
-    """
-
 
     CONFIG = {
         'user': 'candidate',
@@ -80,8 +38,22 @@ AND
         # database with the filtered results, then return in as pandas dataframe
         query = (
         """
-            SELECT country_area, hotel_id, hotel_name, hotel_address, hotel_url, vfm
-            FROM hotel_info
+        SELECT t1.country_area,  t1.hotel_id,  t1.hotel_name,
+               t1.hotel_address, t1.hotel_url, t1.vfm
+        FROM hotel_info as t1, (
+                SELECT
+                    t2.hotel_id
+                FROM
+                    hotel_reviews as t2
+                WHERE
+                    t2.review_date >= '2018-01-01'
+                AND
+                    t2.review_date <= '2019-01-01'
+
+                GROUP BY t2.hotel_id
+                HAVING COUNT(t2.hotel_id) > 4
+        ) as table_2
+        WHERE t1.hotel_id = table_2.hotel_id
         """
         )
         df = pd.read_sql(query, con=self.cnx)
@@ -92,10 +64,26 @@ AND
         # database with the filtered results, then return in as pandas dataframe
         query = (
         """
-            SELECT hotel_id, review_date, review_title, positive_content,
-                negative_content, review_score, UUID
-            FROM hotel_reviews
-            WHERE review_date >= '2018-01-01' AND review_date <= '2019-01-01'
+        SELECT t1.hotel_id, t1.review_date, t1.review_title, t1.positive_content,
+               t1.negative_content, t1.review_score, t1.UUID
+        FROM hotel_reviews as t1, (
+                SELECT
+                    t2.hotel_id
+                FROM
+                    hotel_reviews as t2
+                WHERE
+                    t2.review_date >= '2018-01-01'
+                AND
+                    t2.review_date <= '2019-01-01'
+                GROUP BY t2.hotel_id
+                HAVING COUNT(t2.hotel_id) > 4
+        ) as table_2
+        WHERE
+            t1.hotel_id = table_2.hotel_id
+        AND
+            t1.review_date >= '2018-01-01'
+        AND
+            t1.review_date <= '2019-01-01'
         """
         )
         df = pd.read_sql(query, con=self.cnx)
@@ -117,7 +105,12 @@ def filter_and_save_data():
     # models into the hotels dataframe
     for country_area in hotels.country_area.unique():
         country_obj = CountryArea.objects.create(name=country_area)
-        hotels['country_area'].loc[hotels['country_area'] == country_area] = country_obj
+        hotels['country_area'] =  np.where(
+            hotels['country_area'] == country_area,
+            country_obj,
+            hotels['country_area']
+        )
+        # hotels['country_area'].loc[hotels['country_area'] == country_area] = country_obj
 
     # print(CountryArea.objects.all().count(), '<----')
     # print(hotels)
@@ -141,9 +134,17 @@ def filter_and_save_data():
 
     # Extract the hotel_id to make the models and insert the
     # models into the reviews dataframe
+    h=0
     for hotel_id in reviews.hotel_id.unique():
+        print('Hotel ', h)
+        h+=1
         hotel = Hotel.objects.get(hotel_id=hotel_id)
-        reviews['hotel_id'].loc[reviews['hotel_id'] == hotel_id] = hotel
+        reviews['hotel_id'] =  np.where(
+            reviews['hotel_id'] == hotel_id,
+            hotel,
+            reviews['hotel_id']
+        )
+        # reviews['hotel_id'].loc[reviews['hotel_id'] == hotel_id] = hotel
 
     print(reviews)
 

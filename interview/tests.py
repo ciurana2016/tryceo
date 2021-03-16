@@ -93,14 +93,14 @@ class DatabaseConnectionTest(TestCase):
     def test_query_hotels_data(self):
         DC = DatabaseConnection()
         data = DC.query_hotels_data()
-        self.assertEqual(len(data), 3965)
+        self.assertEqual(len(data), 2848)
         DC.cnx.close()
 
-    @skip('Query takes 10 seconds')
+    # @skip('Query takes 10 seconds')
     def test_query_reviews_data(self):
         DC = DatabaseConnection()
         data = DC.query_reviews_data()
-        self.assertEqual(len(data), 376603)
+        self.assertEqual(len(data), 375113)
         DC.cnx.close()
 
 
