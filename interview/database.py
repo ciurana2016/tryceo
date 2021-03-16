@@ -1,3 +1,4 @@
+import pandas as pd
 import mysql.connector as mysql
 
 from .models import CountryArea, Hotel, HotelReview
@@ -31,41 +32,21 @@ class DatabaseConnection(object):
         self.cursor.close()
         return response
 
-    def query_hotels_data(self) -> list:
+    def query_hotels_data(self) -> pd.DataFrame:
         # Query the hotel data we need to populate our own
-        # database with the filtered results,
-        # then returns the data in a list of dicts.
-        self.cursor = self.cnx.cursor()
-
+        # database with the filtered results, then return in as pandas dataframe
         query = (
         """
             SELECT country_area, hotel_id, hotel_name, hotel_address, hotel_url, vfm
             FROM hotel_info
         """
         )
-        self.cursor.execute(query)
-        data = []
-        for (country_area, hotel_id, hotel_name, hotel_address,
-            hotel_url, vfm
-        ) in self.cursor:
-            data.append({
-                'country_area': country_area,
-                'hotel_id': hotel_id,
-                'hotel_name': hotel_name,
-                'hotel_address': hotel_address,
-                'hotel_url': hotel_url,
-                'vfm': vfm
-            })
+        df = pd.read_sql(query, con=self.cnx)
+        return df
 
-        self.cursor.close()
-        return data
-
-    def query_reviews_data(self) -> list:
-        # Query the hotel data we need to populate our own
-        # database with the filtered results,
-        # then returns the data in a list of dicts.
-        self.cursor = self.cnx.cursor()
-
+    def query_reviews_data(self) -> pd.DataFrame:
+        # Query the review data we need to populate our own
+        # database with the filtered results, then return in as pandas dataframe
         query = (
         """
             SELECT hotel_id, review_date, review_title, positive_content,
@@ -74,24 +55,8 @@ class DatabaseConnection(object):
             WHERE review_date >= '2018-01-01' AND review_date <= '2019-01-01'
         """
         )
-        self.cursor.execute(query)
-        data = []
-        for (
-            hotel_id, review_date, review_title, positive_content,
-            negative_content, review_score, UUID
-        ) in self.cursor:
-            data.append({
-                'UUID': UUID,
-                'hotel_id' : hotel_id,
-                'review_date' : review_date,
-                'review_title' : review_title,
-                'positive_content' : positive_content,
-                'negative_content' : negative_content,
-                'review_score' : review_score
-            })
-
-        self.cursor.close()
-        return data
+        df = pd.read_sql(query, con=self.cnx)
+        return df
 
 
 def filter_and_save_data():
