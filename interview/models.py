@@ -18,6 +18,7 @@ class Hotel(models.Model):
     address = models.CharField(max_length=300)
     url = models.CharField(max_length=300)
     vfm = models.DecimalField(max_digits=5, decimal_places=2)
+    reviews = models.IntegerField(default=0)
 
     def __str__(self):
         return f'Hotel - {self.name}'
@@ -25,6 +26,7 @@ class Hotel(models.Model):
 
 class HotelReview(models.Model):
 
+    UUID = models.CharField(max_length=36, null=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     date = models.DateField()
     title = models.TextField()

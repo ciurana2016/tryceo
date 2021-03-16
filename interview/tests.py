@@ -2,7 +2,7 @@ from unittest import skip
 from django.test import TestCase
 from django.utils import timezone
 
-from .database import DatabaseConnection
+from .database import DatabaseConnection, filter_and_save_data
 from .models import CountryArea, Hotel, HotelReview
 
 
@@ -36,7 +36,7 @@ class HotelModelTest(TestCase):
         self.assertEqual(test_hotel.country_area, self.test_area)
 
 
-class HotelReviewTest(TestCase):
+class HotelReviewModelTest(TestCase):
 
     def setUp(self):
         self.test_area = CountryArea.objects.create(name='test_area')
@@ -52,6 +52,7 @@ class HotelReviewTest(TestCase):
     def test_hotel_review_model(self):
         positive_content = 'Lorem ipsum dolor'
         HotelReview.objects.create(
+            UUID = 'h490bg',
             hotel = self.hotel,
             date = timezone.now(),
             title = 'test_title',
@@ -101,3 +102,12 @@ class DatabaseConnectionTest(TestCase):
         data = DC.query_reviews_data()
         self.assertEqual(len(data), 376603)
         DC.cnx.close()
+
+
+class FilterAndSaveDataTest(TestCase):
+
+    def test_function(self):
+        self.assertEqual(Hotel.objects.all().count(), 0)
+        filter_and_save_data()
+        self.assertTrue(Hotel.objects.all().count() > 1)
+        self.assertEqual(Hotel.objects.filter(reviews__lt=5).count(), 0)

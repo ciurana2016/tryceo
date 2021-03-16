@@ -18,6 +18,11 @@ Run (127.0.0.1:8000):
 ./manage.py runserver
 ```
 
+## Files
+__interview/database.py__ handles downloading the data into our own models.
+__static/sass/*__ where the styles live.
+__templates/*__ where the html lives.
+
 ## Tests
 Please run tests before and after any change.
 ```
