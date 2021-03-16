@@ -106,6 +106,7 @@ class DatabaseConnectionTest(TestCase):
 
 class FilterAndSaveDataTest(TestCase):
 
+    @skip('Long')
     def test_function(self):
         self.assertEqual(Hotel.objects.all().count(), 0)
         filter_and_save_data()

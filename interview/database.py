@@ -110,10 +110,6 @@ def filter_and_save_data():
             country_obj,
             hotels['country_area']
         )
-        # hotels['country_area'].loc[hotels['country_area'] == country_area] = country_obj
-
-    # print(CountryArea.objects.all().count(), '<----')
-    # print(hotels)
 
     # Rename the columns to match models
     hotels.rename(columns={
@@ -133,7 +129,7 @@ def filter_and_save_data():
     print('Start bulck reviews')
 
     # Extract the hotel_id to make the models and insert the
-    # models into the reviews dataframe
+    # models into the reviews dataframe (this takes ~4 min)
     h=0
     for hotel_id in reviews.hotel_id.unique():
         print('Hotel ', h)
@@ -146,53 +142,18 @@ def filter_and_save_data():
         )
         # reviews['hotel_id'].loc[reviews['hotel_id'] == hotel_id] = hotel
 
-    print(reviews)
+    # Rename the columns to match models
+    reviews.rename(columns={
+        'hotel_id': 'hotel',
+        'review_date': 'date',
+        'review_title': 'title'
+    }, inplace=True)
+
+    # Bulk save the data
+    print('BULK CREATING...')
+    d = reviews.to_dict('records')
+    HotelReview.objects.bulk_create(
+        HotelReview(**vals) for vals in d
+    )
 
     print('End bulck reviews')
-
-    # # [1] Create hotels
-    # for hotel in hotels:
-
-    #     # Create the region if we don't have it
-    #     # if not CountryArea.objects.filter(name=hotel['country_area']).exists():
-    #     country_area = CountryArea.objects.create(name=hotel['country_area'])
-    #     # else:
-    #     #     country_area = CountryArea.objects.get(name=hotel['country_area'])
-
-    #     # Create the hotel if we don't have it
-    #     # if not Hotel.objects.filter(name=['hotel_name']).exists():
-    #     Hotel.objects.create(
-    #         country_area = country_area,
-    #         hotel_id = hotel['hotel_id'],
-    #         name = hotel['hotel_name'],
-    #         address = hotel['hotel_address'],
-    #         url = hotel['hotel_url'],
-    #         vfm = hotel['vfm']
-    #     )
-
-
-    # assert len(hotels) == Hotel.objects.all().count()
-
-
-    # # [2] Create reviews if we don't have them
-    # for review in reviews:
-    #     # if not HotelReview.objects.filter(UUID=review['UUID']).exists():
-    #     hotel = Hotel.objects.get(hotel_id=review['hotel_id'])
-    #     HotelReview.objects.create(
-    #         UUID = review['UUID'],
-    #         hotel = hotel,
-    #         date = review['review_date'],
-    #         title = review['review_title'],
-    #         positive_content = review['positive_content'],
-    #         negative_content = review['negative_content'],
-    #         review_score = review['review_score'],
-    #     )
-    #     # Simple cont of the reviews
-    #     hotel.reviews += 1
-    #     hotel.save()
-
-
-    # assert len(reviews) == HotelReview.objects.all().count()
-
-    # # [3] Remove hotels (with reviews) if less than 5 reviews
-    # Hotel.objects.filter(reviews__lt=5).delete()
