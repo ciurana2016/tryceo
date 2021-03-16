@@ -1,8 +1,79 @@
 from unittest import skip
 from django.test import TestCase
+from django.utils import timezone
 
 from .database import DatabaseConnection
+from .models import CountryArea, Hotel, HotelReview
 
+
+
+class CountryAreaModelTest(TestCase):
+
+    def test_country_area_model(self):
+        test_name = 'test_area'
+        CountryArea.objects.create(name=test_name)
+        test_area = CountryArea.objects.first()
+        self.assertEqual(test_area.name, test_name)
+
+
+class HotelModelTest(TestCase):
+
+    def setUp(self):
+        self.test_area = CountryArea.objects.create(name='test_area')
+
+    def test_hotel_model(self):
+        test_name = 'test_hotel'
+        Hotel.objects.create(
+            country_area = self.test_area,
+            hotel_id = 'test_id',
+            name = test_name,
+            address = 'test_address',
+            url = 'https://test.com',
+            vfm = 234.65
+        )
+        test_hotel = Hotel.objects.first()
+        self.assertEqual(test_hotel.name, test_name)
+        self.assertEqual(test_hotel.country_area, self.test_area)
+
+
+class HotelReviewTest(TestCase):
+
+    def setUp(self):
+        self.test_area = CountryArea.objects.create(name='test_area')
+        self.hotel = Hotel.objects.create(
+            country_area = self.test_area,
+            hotel_id = 'test_id',
+            name = 'test_hotel_name',
+            address = 'test_address',
+            url = 'https://test.com',
+            vfm = 234.65
+        )
+
+    def test_hotel_review_model(self):
+        positive_content = 'Lorem ipsum dolor'
+        HotelReview.objects.create(
+            hotel = self.hotel,
+            date = timezone.now(),
+            title = 'test_title',
+            positive_content = positive_content,
+            negative_content = 'negative_test',
+            review_score = 234.56
+        )
+        test_review = HotelReview.objects.first()
+        self.assertEqual(test_review.positive_content, positive_content)
+        self.assertEqual(test_review.hotel, self.hotel)
+
+    def test_hotel_deletion_deletes_review(self):
+        test_review = HotelReview.objects.create(
+            hotel = self.hotel,
+            date = timezone.now(),
+            title = 'test_title',
+            positive_content = 'positive_test',
+            negative_content = 'negative_test',
+            review_score = 234.56
+        )
+        Hotel.objects.first().delete()
+        self.assertEqual(HotelReview.objects.all().count(), 0)
 
 
 class DatabaseConnectionTest(TestCase):
