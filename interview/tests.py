@@ -96,7 +96,7 @@ class DatabaseConnectionTest(TestCase):
         self.assertEqual(len(data), 2848)
         DC.cnx.close()
 
-    # @skip('Query takes 10 seconds')
+    @skip('Query takes long')
     def test_query_reviews_data(self):
         DC = DatabaseConnection()
         data = DC.query_reviews_data()
