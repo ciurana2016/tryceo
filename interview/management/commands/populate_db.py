@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from interview.database import filter_and_save_data()
+from interview.database import filter_and_save_data
 
 
 
