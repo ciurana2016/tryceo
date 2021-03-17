@@ -119,6 +119,7 @@ class GeocodeTest(TestCase):
 
     def setUp(self):
         self.address = 'Valldemossa 30 Palma de Mallorca'
+        self.address_2 = 'Valldemossa 20 Palma de Mallorca'
 
     def test_geocode_address(self):
         GeoCoder = Geocoder()
@@ -139,3 +140,15 @@ class GeocodeTest(TestCase):
         hotel = Hotel.objects.first()
         self.assertEqual(float(hotel.latitude), 39.588977)
         self.assertEqual(float(hotel.longitude), 2.650307)
+
+    def bulk_update_test(self):
+        hotel_1 = Hotel.objects.create(
+            name='test_hotel',
+            address=self.address
+        )
+        hotel_2 = Hotel.objects.create(
+            name='test_hotel',
+            address=self.address_2
+        )
+        GeoCoder = Geocoder()
+        GeoCoder.bulk_update()

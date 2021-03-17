@@ -9,18 +9,38 @@ from .models import Hotel
 class Geocoder(object):
 
     API_KEY = 'b477fd54ae6201d9cd4ee3cfe0a934a7'
+    API_URL = 'http://api.positionstack.com/v1/forward'
 
     def __init__(self):
         pass
 
+    def bulk_update(self):
+        # Update geodata for all hotels (country:ESP)
+
+        # Make a json object that the api can read with all the hotels
+        batch_data = {'batch':[]}
+        for hotel in Hotel.objects.all():
+            batch_data['batch'].append({
+                'query': hotel.address,
+                'country': 'ES'
+            })
+
+        # Make the request
+        payload = {
+            'access_key': self.API_KEY,
+        }
+        r = requests.post(self.API_URL, params=payload, json=batch_data)
+        print(r.status_code)
+        print(r.text)
+
+
     def geocode_address(self, address:str) -> dict:
         # Geocode a single address
-        url = 'http://api.positionstack.com/v1/forward'
         payload = {
             'access_key': self.API_KEY,
             'query': address
         }
-        r = requests.get(url, params=payload)
+        r = requests.get(self.API_URL, params=payload)
 
         if (status := r.status_code == 200):
             data = json.loads(r.text)
