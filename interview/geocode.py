@@ -1,5 +1,10 @@
+from interview.models import Hotel
 import json
+import time
 import requests
+
+from random import choice
+from .models import Hotel
 
 
 
@@ -21,3 +26,20 @@ def geocode_address(address:str) -> dict:
         }
     else:
         return {'ok': status}
+
+
+def update_hotel_geodata(hotel: Hotel):
+    """
+    Populates latitude and longitude fields
+    """
+
+    # Make semi random sleeps
+    time.sleep(choice([.1,.1,.1,.1,.2,.2,.3,.4]))
+
+    geo_data = geocode_address(hotel.address)
+    if geo_data['ok']:
+        hotel.latitude = geo_data['latitude']
+        hotel.longitude = geo_data['longitude']
+        hotel.save()
+    else:
+        print('! Error with the request')

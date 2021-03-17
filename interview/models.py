@@ -12,13 +12,15 @@ class CountryArea(models.Model):
 
 class Hotel(models.Model):
 
-    country_area = models.ForeignKey(CountryArea, on_delete=models.CASCADE)
-    hotel_id = models.CharField(max_length=32)
-    name = models.CharField(max_length=200)
-    address = models.CharField(max_length=300)
-    url = models.CharField(max_length=300)
-    vfm = models.DecimalField(max_digits=5, decimal_places=2)
+    country_area = models.ForeignKey(CountryArea, on_delete=models.CASCADE, null=True)
+    hotel_id = models.CharField(max_length=32, null=True)
+    name = models.CharField(max_length=200, null=True)
+    address = models.CharField(max_length=300, null=True)
+    url = models.CharField(max_length=300, null=True)
+    vfm = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     reviews = models.IntegerField(default=0)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
 
     def __str__(self):
         return f'Hotel - {self.name}'
