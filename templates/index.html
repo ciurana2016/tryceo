@@ -36,10 +36,8 @@
 
     <!-- TODO move out of here all scripts -->
 
-<div id='resizeMap' class='button'>Fix map</div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        // document.addEventListener('DOMContentLoaded', function () {
             /* Toggle map or table */
             let map_checkbox = document.querySelector('#toggle_map');
             map_element = document.querySelector('#map');
@@ -65,12 +63,12 @@
                 Playing arround with the map
             */
             mapboxgl.accessToken = '{{MAPBOX_KEY}}';
-            var monument = [-77.0353, 38.8895];
+            var _default = [ -3.703790, 40.416775];
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/light-v10',
-                center: monument,
-                zoom: 15
+                center: _default,
+                zoom: 5
             });
 
             // Change the map size when a toggle is clicked.
@@ -85,14 +83,29 @@
 
             // Make a mrker
             var marker = new mapboxgl.Marker({
-                color: "#3e3e3e",
-                draggable: false
-                }).setLngLat([-77.0352, 38.8895])
+                    color: "#3e3e3e"
+                }).setLngLat(_default)
                 .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
                 .addTo(map);
 
+            // TODO -- From here down is testing shit
+            {% for hotel in hotels %}
+                {% if hotel.latitude %}
+                    var _{{hotel.hotel_id}} = new mapboxgl.Marker({
+                        color: "#3e3e3e"
+                    })
+                    .setLngLat([{{hotel.longitude}}, {{hotel.latitude}}])
+                    .setPopup(
+                        new mapboxgl.Popup().setHTML(
+                            "<h1>{{hotel.country_area.name}}</h1>" +
+                            "<br> {{hotel.address}}"
+                        )
+                    )
+                    .addTo(map);
+                {% endif %}
+            {% endfor %}
 
-        });
+        // });
     </script>
 
 

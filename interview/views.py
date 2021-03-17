@@ -1,4 +1,4 @@
-from interview.models import CountryArea
+from interview.models import CountryArea, Hotel
 from django.views.generic import TemplateView
 
 from app.settings import MAPBOX_KEY
@@ -16,5 +16,9 @@ class IndexView(TemplateView):
 
         # Load the country areas for the table.
         context['country_areas'] = CountryArea.objects.all().order_by('name')
+
+        # TODO -- from here down make tests
+        # Load the hotels,
+        context['hotels'] = Hotel.objects.all()[:10]
 
         return context
