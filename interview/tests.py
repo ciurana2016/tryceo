@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from .database import DatabaseConnection, filter_and_save_data
 from .models import CountryArea, Hotel, HotelReview
-from .geocode import geocode_address, update_hotel_geodata
+from .geocode import Geocoder
 
 
 
@@ -121,7 +121,8 @@ class GeocodeTest(TestCase):
         self.address = 'Valldemossa 30 Palma de Mallorca'
 
     def test_geocode_address(self):
-        data = geocode_address(self.address)
+        GeoCoder = Geocoder()
+        data = GeoCoder.geocode_address(self.address)
         self.assertEqual(data['latitude'], 39.588977)
         self.assertEqual(data['longitude'], 2.650307)
         self.assertTrue(data['ok'])
@@ -131,7 +132,8 @@ class GeocodeTest(TestCase):
             name='test_hotel',
             address=self.address
         )
-        update_hotel_geodata(hotel)
+        GeoCoder = Geocoder()
+        GeoCoder.update_hotel_geodata(hotel)
 
         # Re-query to have updated hotel data
         hotel = Hotel.objects.first()
