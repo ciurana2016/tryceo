@@ -13,8 +13,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print('[Update hotel geodata] START')
 
+        GeoCoder = Geocoder()
+
         for idx, hotel in enumerate(Hotel.objects.all()):
             print(f'\t updating hotel {idx} ...')
-            Geocoder.update_hotel_geodata(hotel)
+            GeoCoder.update_hotel_geodata(hotel)
 
         print('[Update hotel geodata] END')
