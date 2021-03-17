@@ -7,6 +7,9 @@
     <title>Tryceo</title>
 
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <!-- MapBox -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
 </head>
 <body>
 
@@ -31,13 +34,16 @@
         {% include 'table.html' %}
     </main>
 
-    <!-- TODO move out of here -->
+    <!-- TODO move out of here all scripts -->
+
+<div id='resizeMap' class='button'>Fix map</div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             /* Toggle map or table */
-            map_checkbox = document.querySelector('#toggle_map');
+            let map_checkbox = document.querySelector('#toggle_map');
             map_element = document.querySelector('#map');
-            table_checkbox = document.querySelector('#toggle_table');
+            let table_checkbox = document.querySelector('#toggle_table');
             table_element = document.querySelector('#table');
 
             make_toggle_item = (checkbox, toggle_element) => {
@@ -53,8 +59,42 @@
             };
             make_toggle_item(map_checkbox, map_element);
             make_toggle_item(table_checkbox, table_element);
+
+
+            /*
+                Playing arround with the map
+            */
+            mapboxgl.accessToken = '{{MAPBOX_KEY}}';
+            var monument = [-77.0353, 38.8895];
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/light-v10',
+                center: monument,
+                zoom: 15
+            });
+
+            // Change the map size when a toggle is clicked.
+            map.on('load', function() {
+                table_checkbox.addEventListener('click', ()=> {
+                    map.resize();
+                });
+                map_checkbox.addEventListener('click', ()=> {
+                    map.resize();
+                });
+            });
+
+            // Make a mrker
+            var marker = new mapboxgl.Marker({
+                color: "#3e3e3e",
+                draggable: false
+                }).setLngLat([-77.0352, 38.8895])
+                .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
+                .addTo(map);
+
+
         });
     </script>
+
 
 </body>
 </html>{% endspaceless %}

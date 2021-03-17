@@ -22,6 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'p72$&mp!y#^rm8@achzvk)m(+c)2!sxt(ka8&xmz&%!_09s^k#'
 
+MAPBOX_KEY = 'pk.eyJ1Ijoiam1jYXJyYXNjb3NhIiwiYSI6ImNrZGlvcmIzMzA3MW0zMG50dG90NWJ0aTEifQ.ZoobdVV5OqJUUVH-k2ZHDg'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
