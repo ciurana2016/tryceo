@@ -1,0 +1,39 @@
+<section id="table">
+    <div class="select_region">
+        <p class="title">Select region:</p>
+        <ul class="regions">
+            {% for area in country_areas %}
+                <li class="region">
+                    <input type="checkbox" id="checkbox_{{area.name |cut:' '}}">
+                    <label for="checkbox_{{area.name |cut:' '}}"
+                           id="_checkbox_{{area.name |cut:' '}}">
+                        <span class="name">
+                            {{ area.name }}
+                        </span>
+                        <div class="checkbox_background">
+                        <div class="checkbox_ball"></div>
+                        </div>
+                    </label>
+                </li>
+            {% endfor %}
+
+            <li class="region">
+                <input type="checkbox" id="checkbox_All">
+                <label for="checkbox_All" id="_checkbox_All">
+                    <span class="name">All</span>
+                    <div class="checkbox_background">
+                    <div class="checkbox_ball"></div>
+                    </div>
+                </label>
+            </li>
+        </ul>
+    </div>
+    <div class="review_box">
+        <div class="header">
+            <div class="title">Reviews of ==Hotel name==</div>
+        </div>
+        <ul>
+            <li>Review ...</li>
+        </ul>
+    </div>
+</section>

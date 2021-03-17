@@ -7,6 +7,16 @@ from .models import CountryArea, Hotel, HotelReview
 from .geocode import Geocoder
 
 
+class IndexViewTest(TestCase):
+
+    def setUp(self):
+        self.test_area = CountryArea.objects.create(name='test_area')
+
+    def test_get_country_areas(self):
+        response = self.client.get('/')
+        areas = response.context['country_areas']
+        self.assertEqual(areas[0].name, self.test_area.name)
+
 
 class CountryAreaModelTest(TestCase):
 
