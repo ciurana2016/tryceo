@@ -14,26 +14,6 @@ class Geocoder(object):
     def __init__(self):
         pass
 
-    def bulk_update(self):
-        # Update geodata for all hotels (country:ESP)
-
-        # Make a json object that the api can read with all the hotels
-        batch_data = {'batch':[]}
-        for hotel in Hotel.objects.all():
-            batch_data['batch'].append({
-                'query': hotel.address,
-                'country': 'ES'
-            })
-
-        # Make the request
-        payload = {
-            'access_key': self.API_KEY,
-        }
-        r = requests.post(self.API_URL, params=payload, json=batch_data)
-        print(r.status_code)
-        print(r.text)
-
-
     def geocode_address(self, address:str) -> dict:
         # Geocode a single address
         payload = {
