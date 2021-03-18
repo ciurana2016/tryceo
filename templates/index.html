@@ -193,14 +193,22 @@
                         .addTo(map);
                     });
 
-                {% endfor %}
+                    // There is some offsetting problem and when you click on it
+                    // it does not work, but if you click 5 pixels below it does ? wtf
+                    map.on('mouseenter', 'unclustered-point-{{area.name |cut:' '}}', function () {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+                    map.on('mouseleave', 'unclustered-point-{{area.name |cut:' '}}', function () {
+                        map.getCanvas().style.cursor = '';
+                    });
+                    map.on('mouseenter', 'clusters-{{area.name |cut:' '}}', function () {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+                    map.on('mouseleave', 'clusters-{{area.name |cut:' '}}', function () {
+                        map.getCanvas().style.cursor = '';
+                    });
 
-                map.on('mouseenter', 'clusters', function () {
-                    map.getCanvas().style.cursor = 'pointer';
-                });
-                map.on('mouseleave', 'clusters', function () {
-                    map.getCanvas().style.cursor = '';
-                });
+                {% endfor %}
 
             });
 
