@@ -237,6 +237,7 @@
                 functionalityChecks = function(element, idx, arr) {
                     let checkbox = document.getElementById(element);
                     let area_name = checkbox.getAttribute('attr-area-name');
+                    let bound_box = JSON.parse(checkbox.getAttribute('attr-bounds'));
                     // The layers to show and hide are:
                     let area_layers = [
                         'clusters-',
@@ -248,11 +249,18 @@
                             area_layers.forEach( layer =>
                                 map.setLayoutProperty(layer+area_name, 'visibility', 'visible')
                             )
+                            // Boundg box
+                            map.fitBounds(bound_box);
                             // TODO - Call function to load reviews
                         } else {
                             area_layers.forEach( layer =>
                                 map.setLayoutProperty(layer+area_name, 'visibility', 'none')
                             )
+                            // Re-fit to spain
+                            map.fitBounds([
+                                [-8.804037, 44.213710],
+                                [3.427445, 35.421371]
+                            ]);
                         }
                     });
                 }

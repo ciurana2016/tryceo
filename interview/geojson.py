@@ -115,6 +115,7 @@ def make_geojson_file(country_area: CountryArea) -> None:
 
     # Save area bounding box
     country_area.bounding_box = str(MapBox.get_box())
+    country_area.save()
 
     # Save geojson file
     file_path = str(STATICFILES_DIRS[0]) + '/geojson/'
