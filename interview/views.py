@@ -17,8 +17,4 @@ class IndexView(TemplateView):
         # Load the country areas for the table.
         context['country_areas'] = CountryArea.objects.all().order_by('name')
 
-        # TODO -- from here down make tests
-        # Load the hotels,
-        context['hotels'] = Hotel.objects.all()[:10]
-
         return context
