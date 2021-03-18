@@ -16,10 +16,20 @@ class Geocoder(object):
 
     def geocode_address(self, hotel:Hotel) -> dict:
         # Geocode a single address
+
+        # Hard code some regions, the api seems to not like
+        # Costa del sol and Costa blanca
+        if hotel.country_area.name == 'Costa Blanca':
+            region = 'Alicante'
+        elif hotel.country_area.name == 'Costa del Sol':
+            region = 'Malaga'
+        else:
+            region = hotel.country_area.name
+
         payload = {
             'access_key': self.API_KEY,
             'country': 'ES',
-            'region': hotel.country_area.name,
+            'region': region,
             'query': hotel.address
         }
         r = requests.get(self.API_URL, params=payload)
