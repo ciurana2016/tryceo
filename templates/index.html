@@ -234,16 +234,17 @@
                 // Add event listener on checkbox change to:
                 //      1. Show the map layers
                 //      2. Load the reviews of that layer
+                const area_layers = [
+                    'clusters-',
+                    'cluster-count-',
+                    'unclustered-point-'
+                ]
+
                 functionalityChecks = function(element, idx, arr) {
                     let checkbox = document.getElementById(element);
                     let area_name = checkbox.getAttribute('attr-area-name');
                     let bound_box = JSON.parse(checkbox.getAttribute('attr-bounds'));
                     // The layers to show and hide are:
-                    let area_layers = [
-                        'clusters-',
-                        'cluster-count-',
-                        'unclustered-point-'
-                    ]
                     checkbox.addEventListener('change', () => {
                         if (checkbox.checked) {
                             area_layers.forEach( layer =>

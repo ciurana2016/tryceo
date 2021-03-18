@@ -20,9 +20,11 @@ Run (127.0.0.1:8000):
 
 ## Files
 1. __interview/database.py__ handles downloading the data into our own models.
-2. __interview/geocode.py__ geocoding.
-3. __static/sass/*__ where the styles live.
-4. __templates/*__ where the html lives.
+2. __interview/geocode.py__ geocoding (batch geocoding costed money so went for 1 by 1 ).
+3. __interview/geojson.py__ generates the geojson files.
+4. __static/geojson/*__ gejson files by country area.
+5. __static/sass/*__ where the styles live.
+6. __templates/*__ where the html/js lives.
 
 ## Tests
 Please run tests before and after any change.

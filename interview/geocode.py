@@ -14,11 +14,13 @@ class Geocoder(object):
     def __init__(self):
         pass
 
-    def geocode_address(self, address:str) -> dict:
+    def geocode_address(self, hotel:Hotel) -> dict:
         # Geocode a single address
         payload = {
             'access_key': self.API_KEY,
-            'query': address
+            'country': 'ES',
+            'region': hotel.country_area.name,
+            'query': hotel.address
         }
         r = requests.get(self.API_URL, params=payload)
 
@@ -38,7 +40,7 @@ class Geocoder(object):
 
     def update_hotel_geodata(self, hotel: Hotel):
         # Updates latitude and longitude on single hotel
-        geo_data = self.geocode_address(hotel.address)
+        geo_data = self.geocode_address(hotel)
         if geo_data['ok']:
             hotel.latitude = geo_data['latitude']
             hotel.longitude = geo_data['longitude']
