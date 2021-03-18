@@ -1,5 +1,6 @@
 import json
 
+from app.settings import STATICFILES_DIRS
 from .models import CountryArea, Hotel
 
 
@@ -116,4 +117,8 @@ def make_geojson_file(country_area: CountryArea) -> None:
     country_area.bounding_box = str(MapBox.get_box())
 
     # Save geojson file
+    file_path = str(STATICFILES_DIRS[0]) + '/geojson/'
+    file_name = f'{country_area.name.replace(" ", "")}.geojson'
 
+    with open(file_path + file_name, 'w') as f:
+        json.dump(data, f)
