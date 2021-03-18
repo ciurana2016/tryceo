@@ -1,10 +1,14 @@
+import json
+
 from .models import CountryArea, Hotel
 
 
 class MapBoundingBox(object):
-    """
+    '''
         TODO Tests
-    """
+        This class can iterate longitud and latitude points to create a box
+        defining the bounding box of a CountryArea
+    '''
 
     def __init__(self):
         self.p1_lon, self.p1_lat = False, False
@@ -29,14 +33,14 @@ class MapBoundingBox(object):
         else:
             return True
 
-    def fit_hotel_points(self, hotel: Hotel) -> None:
+    def fit_hotel_points(self, hotel: Hotel) -> bool:
         # Filter bad results
         if hotel.latitude == None or hotel.longitude == None:
-            return None
+            return False
 
         # Not a spain point
         if not self.fits_spain(hotel):
-            return None
+            return False
 
         # First points of box
         if self.first_point == False:
@@ -45,7 +49,7 @@ class MapBoundingBox(object):
             self.p2_lon = hotel.longitude
             self.p2_lat = hotel.latitude
             self.first_point = True
-            return None
+            return True
 
         # Now we chech every point
         if hotel.latitude > self.p1_lat:
@@ -58,7 +62,7 @@ class MapBoundingBox(object):
         if hotel.longitude > self.p2_lon:
             self.p2_lon = hotel.longitude
 
-        return None
+        return True
 
     def get_box(self) -> list:
         return [
@@ -79,11 +83,37 @@ def make_geojson_file(country_area: CountryArea) -> None:
     MapBox = MapBoundingBox()
 
     # Dict to be converted to geojson
-    data = {}
+    data = {
+        'type': 'FeatureCollection',
+        'crs': {
+            'type': 'name', 'properties': {
+                'name': 'urn:ogc:def:crs:OGC:1.3:CRS84'
+            }
+        },
+        'features': []
+    }
 
     for hotel in Hotel.objects.filter(country_area=country_area):
-        # fit bounding box
-        MapBox.fit_hotel_points(hotel)
+        # Fit bounding box
+        # fit_hotel returs false if it was not in spain
+        # our geoapi geocoded a bunch of bad results
+        if MapBox.fit_hotel_points(hotel):
+            data['features'].append({
+                'type': 'Feature',
+                'properties': {
+                    'name': hotel.name,
+                    'url': hotel.url,
+                    'area': country_area.name,
+                    'address': hotel.address
+                },
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [float(hotel.longitude), float(hotel.latitude)]
+                }
+            })
 
     # Save area bounding box
-    # country_area.bounding_box = str(MapBox.get_box())
+    country_area.bounding_box = str(MapBox.get_box())
+
+    # Save geojson file
+
