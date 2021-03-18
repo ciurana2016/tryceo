@@ -28,13 +28,15 @@
     <main>
         <!-- Map -->
         <section id="map">
-            MAP
+            LOADING MAP ...
         </section>
         <!-- Table -->
         {% include 'table.html' %}
     </main>
 
     <!-- TODO move out of here all scripts -->
+
+    <style> a.popup_url { color: rgb(100,100, 200) } </style>
 
     <script>
         // document.addEventListener('DOMContentLoaded', function () {
@@ -63,11 +65,12 @@
                 Playing arround with the map
             */
             mapboxgl.accessToken = '{{MAPBOX_KEY}}';
-            var _default = [ -3.703790, 40.416775];
+
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/light-v10',
-                center: _default,
+                // Set the center of the map to be Madrid.
+                center: [ -3.703790, 40.416775],
                 zoom: 5
             });
 
@@ -81,7 +84,12 @@
                     map.resize();
                 });
 
-                // Load the cluster layers from country areas
+                // Save checkbox ids for config
+                let checkbox_ids = [];
+
+                // Load the cluster layers from country areas but set
+                // the visibility of the areas to none beacuse we want the
+                // user to use the country_areas toggles.
                 // Literally copyed from https://docs.mapbox.com/mapbox-gl-js/example/cluster/
                 {% for area in country_areas %}
                     map.addSource('{{area.name |cut:' '}}', {
@@ -93,11 +101,15 @@
                         clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
                     });
 
+                    // LAYER clusters-area_name
                     map.addLayer({
                         id: 'clusters-{{area.name |cut:' '}}',
                         type: 'circle',
                         source: '{{area.name |cut:' '}}',
                         filter: ['has', 'point_count'],
+                        layout: {
+                            'visibility': 'none'
+                        },
                         paint: {
                             'circle-color': [
                                 'step',
@@ -120,23 +132,29 @@
                         }
                     });
 
+                    // LAYER cluster-count-area_name
                     map.addLayer({
                         id: 'cluster-count-{{area.name |cut:' '}}',
                         type: 'symbol',
                         source: '{{area.name |cut:' '}}',
                         filter: ['has', 'point_count'],
                         layout: {
+                            'visibility': 'none',
                             'text-field': '{point_count_abbreviated}',
                             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                             'text-size': 12
                         }
                     });
 
+                     // LAYER unclustered-point-area_name
                     map.addLayer({
                         id: 'unclustered-point-{{area.name |cut:' '}}',
                         type: 'circle',
                         source: '{{area.name |cut:' '}}',
                         filter: ['!', ['has', 'point_count']],
+                        layout: {
+                            'visibility': 'none'
+                        },
                         paint: {
                             'circle-color': '#596F6C',
                             'circle-radius': 7,
@@ -145,7 +163,7 @@
                         }
                     });
 
-                    // inspect a cluster on click
+                    // Zoom on cluster on click
                     map.on('click', 'clusters-{{area.name |cut:' '}}', function (e) {
                         var features = map.queryRenderedFeatures(e.point, {
                             layers: ['clusters-{{area.name |cut:' '}}']
@@ -164,7 +182,6 @@
                         );
                     });
 
-
                     // When a click event occurs on a feature in
                     // the unclustered-point layer, open a popup at
                     // the location of the feature, with
@@ -172,7 +189,6 @@
                     map.on('click', 'unclustered-point-{{area.name |cut:' '}}', function (e) {
                         var coordinates = e.features[0].geometry.coordinates.slice();
                         // Our own data
-                        console.log('click');
                         var name = e.features[0].properties.name;
                         var url = e.features[0].properties.url;
                         var area = e.features[0].properties.area;
@@ -188,7 +204,9 @@
                         new mapboxgl.Popup()
                         .setLngLat(coordinates)
                         .setHTML(
-                            name
+                            '<h2>' + name + '</h2><br>' +
+                            '<p>' + address + '</p><br>' +
+                            '<a class="popup_url" href="' + url + '" target="_blank">Show on Booking</a>'
                         )
                         .addTo(map);
                     });
@@ -208,9 +226,40 @@
                         map.getCanvas().style.cursor = '';
                     });
 
+                    // Save checkbox id to give them functionality
+                    checkbox_ids.push('checkbox_{{area.name |cut:' '}}')
+
                 {% endfor %}
 
-            });
+                // Add event listener on checkbox change to:
+                //      1. Show the map layers
+                //      2. Load the reviews of that layer
+                functionalityChecks = function(element, idx, arr) {
+                    let checkbox = document.getElementById(element);
+                    let area_name = checkbox.getAttribute('attr-area-name');
+                    // The layers to show and hide are:
+                    let area_layers = [
+                        'clusters-',
+                        'cluster-count-',
+                        'unclustered-point-'
+                    ]
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            area_layers.forEach( layer =>
+                                map.setLayoutProperty(layer+area_name, 'visibility', 'visible')
+                            )
+                            // TODO - Call function to load reviews
+                        } else {
+                            area_layers.forEach( layer =>
+                                map.setLayoutProperty(layer+area_name, 'visibility', 'none')
+                            )
+                        }
+                    });
+                }
+
+                checkbox_ids.forEach(functionalityChecks);
+
+            }); // End map.on()
 
         // });
     </script>

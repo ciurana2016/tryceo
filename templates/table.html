@@ -4,7 +4,9 @@
         <ul class="regions">
             {% for area in country_areas %}
                 <li class="region">
-                    <input type="checkbox" id="checkbox_{{area.name |cut:' '}}">
+                    <input type="checkbox"
+                        id="checkbox_{{area.name |cut:' '}}"
+                        attr-area-name="{{area.name |cut:' '}}">
                     <label for="checkbox_{{area.name |cut:' '}}"
                            id="_checkbox_{{area.name |cut:' '}}">
                         <span class="name">
