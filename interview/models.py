@@ -23,6 +23,12 @@ class Hotel(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
 
+    class Meta:
+        unique_together = [['name', 'vfm', 'url' , 'country_area']]
+
+    def natural_key(self):
+            return (self.name, self.vfm, self.url, self.country_area.name)
+
     def __str__(self):
         return f'Hotel - {self.name}'
 

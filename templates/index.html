@@ -222,9 +222,9 @@
                         new mapboxgl.Popup()
                         .setLngLat(coordinates)
                         .setHTML(
-                            '<h2>' + name + '</h2><br>' +
-                            '<p>' + address + '</p><br>' +
-                            '<a class="popup_url" href="' + url + '" target="_blank">Show on Booking</a>'
+                            `<h2>${name}</h2><br>
+                             <p>${address}</p><br>
+                             <a class="popup_url" href="${url}" target="_blank">Show on Booking</a>`
                         )
                         .addTo(map);
                     });
@@ -262,6 +262,37 @@
                 let all_checkbox = document.getElementById('checkbox_All');
                 area_check_states = {};
 
+                // Takes response from server and transforms the json to html
+                review_box_list = document.querySelector('.review_box ul');
+                populate_reviews = function(json) {
+                    // Reset the previous list
+                    review_box_list.innerHTML = '';
+                    // Populate the table
+                    for (let i=0; i<json.length; i++) {
+                        // Make data easy to read
+                        date = json[i]['fields']['date'];
+                        hotel_name = json[i]['fields']['hotel'][0];
+                        hotel_url = json[i]['fields']['hotel'][2];
+                        country_area = json[i]['fields']['hotel'][3];
+                        positive_content = json[i]['fields']['positive_content'];
+                        negative_content = json[i]['fields']['negative_content'];
+                        // Generate <li> elements with the data
+                        li = document.createElement("li");
+                        li.innerHTML = `
+                            <div class="review_title">
+                                <span>${hotel_name}</span>
+                                <span>${country_area}</span>
+                            </div>
+                            <div class="review_texts">
+                                <b>Positive:</b> <p>${positive_content}</p><br>
+                                <b>Negative:</b> <p>${negative_content}</p>
+                            </div>
+                        `;
+                        review_box_list.appendChild(li);
+                    }
+                    review_box_list.classList.add('show_rviews');
+                }
+
                 // We load reviews form the area_check_state or all
                 load_reviews = function(all) {
                     // Decide what data to send to the backend
@@ -287,15 +318,12 @@
                     fetch(request, {
                         method: "POST",
                         body: JSON.stringify(data)
-                    }).then(res => {
-                        setTimeout(()=>{
-                            console.log(res);
-                            if (res.status == 200) {
-                                console.log('ok');
-                            } else {
-                                console.log('Err:', res.status);
-                            }
-                        }, 200);
+                    })
+                    .then(res => res.json())
+                    .catch(error => console.error('Error:', error))
+                    .then(response => {
+                        // console.log('Success:', JSON.parse(response['reviews'])[0])
+                        populate_reviews(JSON.parse(response['reviews']))
                     });
                 };
 

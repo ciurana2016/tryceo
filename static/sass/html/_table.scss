@@ -7,6 +7,7 @@ main section#table {
     display: flex;
     color: white;
     flex-direction: column;
+    width: 40%;
 }
 
 div.select_region {
@@ -17,6 +18,51 @@ div.select_region {
         li {
             box-sizing: border-box;
             width: 50%;
+        }
+    }
+}
+
+div.review_box {
+    // 100% - size of top box
+    height: calc(100% - 252px);
+    ul {
+        margin: $p;
+        // Leave some room for pagination buttons
+        height: calc(100% - 200px);
+        overflow: hidden;
+        overflow-y: scroll;
+        &.show_rviews::-webkit-scrollbar {
+            background: rgb(255,255,255);
+            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(100,121,200,0) 100%);
+            border-radius: 8px;
+            width: 17px;
+        }
+        &.show_rviews::-webkit-scrollbar-thumb {
+            border-radius: 50%;
+            background-color: $black;
+            box-shadow: inset 0px 0px 0px 2px white;
+        }
+    }
+    li {
+        background: white;
+        border-radius: $border_radius;
+        box-sizing: border-box;
+        color: $black;
+        font-family: sans-serif;
+        font-size: 14px;
+        margin-bottom: $p/2;
+        margin-right: $p/2;;
+        &.no-select {
+            padding: $p;
+        }
+        .review_title {
+            border-bottom: 1px solid $black;
+            display: flex;
+            padding: $p/2;
+            justify-content: space-between;
+        }
+        .review_texts {
+            padding: $p/2;
         }
     }
 }
