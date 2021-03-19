@@ -242,8 +242,14 @@
 
                 // All-checkbox
                 let all_checkbox = document.getElementById('checkbox_All');
-
                 area_check_states = {};
+
+                // We load reviews form the area_check_state or all
+                load_reviews = function(all) {
+                    console.log('Loading reviews of');
+                    console.log(area_check_states, all);
+                };
+
                 toggle_all_on = function(element, i, a) {
                     checkbox = document.getElementById(element);
                     area_name = checkbox.getAttribute('attr-area-name');
@@ -269,8 +275,10 @@
                 all_checkbox.addEventListener('change', () => {
                     if (all_checkbox.checked) {
                         checkbox_ids.forEach(toggle_all_on);
+                        load_reviews(true);
                     } else {
                         checkbox_ids.forEach(toggle_all_off);
+                        load_reviews(false);
                     }
                     // Re-fit to spain
                     map.fitBounds([
@@ -285,13 +293,16 @@
                     let bound_box = JSON.parse(checkbox.getAttribute('attr-bounds'));
                     // The layers to show and hide are:
                     checkbox.addEventListener('change', () => {
+                        // Save current state for laters
+                        area_check_states[element] = checkbox.checked;
+                        // Loas reviews
+                        load_reviews(false);
                         if (checkbox.checked) {
                             area_layers.forEach( layer =>
                                 map.setLayoutProperty(layer+area_name, 'visibility', 'visible')
                             )
                             // Boundg box
                             map.fitBounds(bound_box);
-                            // TODO - Call function to load reviews
                         } else {
                             area_layers.forEach( layer =>
                                 map.setLayoutProperty(layer+area_name, 'visibility', 'none')
