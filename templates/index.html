@@ -10,6 +10,24 @@
     <!-- MapBox -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+    <!-- CSRFs -->
+    <script>
+        function getCSRFCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCSRFCookie('csrftoken');
+    </script>
 </head>
 <body>
 
@@ -246,15 +264,50 @@
 
                 // We load reviews form the area_check_state or all
                 load_reviews = function(all) {
+                    // Decide what data to send to the backend
+                    data = {};
+                    if (all) {
+                        data['all'] = true;
+                    } else {
+                        // Make data more readable for server
+                        for (let i=0; i<Object.keys(area_check_states).length; i++) {
+                            l = Object.keys(area_check_states)[i];
+                            data[area_check_states[l]['name']]
+                                = area_check_states[l]['state'];
+                        }
+                    }
+
+                    // Send data and make the html
                     console.log('Loading reviews of');
-                    console.log(area_check_states, all);
+                    request = new Request(
+                        "/load_reviews/",
+                        {headers: {'X-CSRFToken': csrftoken}}
+                    );
+
+                    fetch(request, {
+                        method: "POST",
+                        body: JSON.stringify(data)
+                    }).then(res => {
+                        setTimeout(()=>{
+                            console.log(res);
+                            if (res.status == 200) {
+                                console.log('ok');
+                            } else {
+                                console.log('Err:', res.status);
+                            }
+                        }, 200);
+                    });
                 };
 
                 toggle_all_on = function(element, i, a) {
                     checkbox = document.getElementById(element);
                     area_name = checkbox.getAttribute('attr-area-name');
+                    full_area_name = checkbox.getAttribute('attr-full-area-name');
                     // Save current state for laters
-                    area_check_states[element] = checkbox.checked;
+                    area_check_states[element] = {
+                        'state': checkbox.checked,
+                        'name': full_area_name
+                    };
                     checkbox.checked = true;
                     area_layers.forEach( layer =>
                         map.setLayoutProperty(layer+area_name, 'visibility', 'visible')
@@ -264,7 +317,7 @@
                 toggle_all_off = function(element, i, a) {
                     checkbox = document.getElementById(element);
                     area_name = checkbox.getAttribute('attr-area-name');
-                    if (area_check_states[element] == false) {
+                    if (area_check_states[element]['state'] == false) {
                         area_layers.forEach( layer =>
                             map.setLayoutProperty(layer+area_name, 'visibility', 'none')
                         );
@@ -290,11 +343,15 @@
                 functionality_checks = function(element, idx, arr) {
                     let checkbox = document.getElementById(element);
                     let area_name = checkbox.getAttribute('attr-area-name');
+                    let full_area_name = checkbox.getAttribute('attr-full-area-name');
                     let bound_box = JSON.parse(checkbox.getAttribute('attr-bounds'));
                     // The layers to show and hide are:
                     checkbox.addEventListener('change', () => {
                         // Save current state for laters
-                        area_check_states[element] = checkbox.checked;
+                        area_check_states[element] = {
+                            'state': checkbox.checked,
+                            'name': full_area_name
+                        };
                         // Loas reviews
                         load_reviews(false);
                         if (checkbox.checked) {
@@ -317,6 +374,8 @@
                 }
 
                 checkbox_ids.forEach(functionality_checks);
+
+                console.log('[map loaded]');
 
             }); // End map.on()
 

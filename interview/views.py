@@ -1,5 +1,9 @@
-from interview.models import CountryArea, Hotel
+from django.http.response import JsonResponse
+import json
+
+from interview.models import CountryArea, HotelReview
 from django.views.generic import TemplateView
+from django.http import JsonResponse
 
 from app.settings import MAPBOX_KEY
 
@@ -18,3 +22,14 @@ class IndexView(TemplateView):
         context['country_areas'] = CountryArea.objects.all().order_by('name')
 
         return context
+
+
+def load_reviews(request) -> JsonResponse:
+    data = json.loads(request.body.decode('utf-8'))
+
+    if 'all' in data.keys():
+        print('ALL REVIEWS')
+    else:
+        print('SOME REVIEWS')
+
+    return JsonResponse({'ok': True})
