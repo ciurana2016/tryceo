@@ -240,7 +240,46 @@
                     'unclustered-point-'
                 ]
 
-                functionalityChecks = function(element, idx, arr) {
+                // All-checkbox
+                let all_checkbox = document.getElementById('checkbox_All');
+
+                area_check_states = {};
+                toggle_all_on = function(element, i, a) {
+                    checkbox = document.getElementById(element);
+                    area_name = checkbox.getAttribute('attr-area-name');
+                    // Save current state for laters
+                    area_check_states[element] = checkbox.checked;
+                    checkbox.checked = true;
+                    area_layers.forEach( layer =>
+                        map.setLayoutProperty(layer+area_name, 'visibility', 'visible')
+                    )
+                };
+
+                toggle_all_off = function(element, i, a) {
+                    checkbox = document.getElementById(element);
+                    area_name = checkbox.getAttribute('attr-area-name');
+                    if (area_check_states[element] == false) {
+                        area_layers.forEach( layer =>
+                            map.setLayoutProperty(layer+area_name, 'visibility', 'none')
+                        );
+                        checkbox.checked = false;
+                    }
+                }
+
+                all_checkbox.addEventListener('change', () => {
+                    if (all_checkbox.checked) {
+                        checkbox_ids.forEach(toggle_all_on);
+                    } else {
+                        checkbox_ids.forEach(toggle_all_off);
+                    }
+                    // Re-fit to spain
+                    map.fitBounds([
+                        [-8.804037, 44.213710],
+                        [3.427445, 35.421371]
+                    ]);
+                });
+
+                functionality_checks = function(element, idx, arr) {
                     let checkbox = document.getElementById(element);
                     let area_name = checkbox.getAttribute('attr-area-name');
                     let bound_box = JSON.parse(checkbox.getAttribute('attr-bounds'));
@@ -266,7 +305,7 @@
                     });
                 }
 
-                checkbox_ids.forEach(functionalityChecks);
+                checkbox_ids.forEach(functionality_checks);
 
             }); // End map.on()
 
