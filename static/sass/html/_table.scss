@@ -65,4 +65,15 @@ div.review_box {
             padding: $p/2;
         }
     }
+    .load_more {
+        cursor: pointer;
+        display: none;
+        border: 1px solid $pale;
+        border-radius: $border_radius;
+        margin: $p;
+        padding: $p/2;
+        &.show_more {
+            display: block;
+        }
+    }
 }

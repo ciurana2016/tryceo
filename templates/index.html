@@ -31,6 +31,28 @@
 </head>
 <body>
 
+    <!-- loading to prevent use -->
+    <div class="loading">
+        <svg xmlns="http://www.w3.org/2000/svg" style="display:none" version="1.1">
+        <defs>
+            <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+            <feBlend in="SourceGraphic" in2="goo" />
+            </filter>
+        </defs>
+        </svg>
+
+        <div class="ball_container">
+            <div class="balls">
+                <div class="ball"></div>
+                <div class="ball ball_2"></div>
+                <div class="ball ball_3"></div>
+                <div class="ball ball_4"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Show/hide map or table -->
     <section id="map_table_toggle">
         <input type="checkbox" checked="checked" id="toggle_map"/>
@@ -293,23 +315,46 @@
                     review_box_list.classList.add('show_rviews');
                 }
 
+                let current_pagination_page = 1;
+                load_more_btn = document.querySelector('.load_more');
+                load_event_added = false;
+
+                load_more = function(response, all, data) {
+                    next_page = response['next_page_number'];
+                    if (next_page) {
+                        load_more_btn.classList.add('show_more');
+                        // Add listener to button to make more requests
+                        // if not added before
+                        if ( load_event_added == false) {
+                            load_more_btn.addEventListener('click', () => {
+                                load_reviews(all);
+                            });
+                            load_event_added = true;
+                        }
+                    }
+                }
+
                 // We load reviews form the area_check_state or all
                 load_reviews = function(all) {
                     // Decide what data to send to the backend
-                    data = {};
+                    data = {
+                        'areas': [],
+                        'page':current_pagination_page
+                    };
+                    current_pagination_page += 1;
                     if (all) {
                         data['all'] = true;
                     } else {
                         // Make data more readable for server
                         for (let i=0; i<Object.keys(area_check_states).length; i++) {
                             l = Object.keys(area_check_states)[i];
-                            data[area_check_states[l]['name']]
-                                = area_check_states[l]['state'];
+                            if (area_check_states[l]['state']) {
+                                data['areas'].push(area_check_states[l]['name'])
+                            }
                         }
                     }
 
                     // Send data and make the html
-                    console.log('Loading reviews of');
                     request = new Request(
                         "/load_reviews/",
                         {headers: {'X-CSRFToken': csrftoken}}
@@ -320,10 +365,25 @@
                         body: JSON.stringify(data)
                     })
                     .then(res => res.json())
-                    .catch(error => console.error('Error:', error))
+                    .catch(error => {
+                        review_box_list.innerHTML =
+                        '<li class="no-select">Select region to see reviews.</li>';
+                        review_box_list.classList.remove('show_rviews');
+                        console.error('-Error:', error);
+                        load_more_btn.classList.remove('show_more');
+                    })
                     .then(response => {
-                        // console.log('Success:', JSON.parse(response['reviews'])[0])
-                        populate_reviews(JSON.parse(response['reviews']))
+                        if (response['reviews']) {
+                            populate_reviews(JSON.parse(response['reviews']));
+                            load_more(response, all, data);
+                        }
+                        if (response['empty']) {
+                            review_box_list.innerHTML =
+                                '<li class="no-select">Select region to see reviews.</li>';
+                                review_box_list.classList.remove('show_rviews');
+                                load_more_btn.classList.remove('show_more');
+                        }
+
                     });
                 };
 
@@ -354,6 +414,7 @@
                 }
 
                 all_checkbox.addEventListener('change', () => {
+                    current_pagination_page = 1;
                     if (all_checkbox.checked) {
                         checkbox_ids.forEach(toggle_all_on);
                         load_reviews(true);
@@ -383,12 +444,14 @@
                         // Loas reviews
                         load_reviews(false);
                         if (checkbox.checked) {
+                            current_pagination_page = 1;
                             area_layers.forEach( layer =>
                                 map.setLayoutProperty(layer+area_name, 'visibility', 'visible')
                             )
                             // Boundg box
                             map.fitBounds(bound_box);
                         } else {
+                            current_pagination_page = 1;
                             area_layers.forEach( layer =>
                                 map.setLayoutProperty(layer+area_name, 'visibility', 'none')
                             )
@@ -403,7 +466,13 @@
 
                 checkbox_ids.forEach(functionality_checks);
 
+                // On map load show the html
                 console.log('[map loaded]');
+                load = document.querySelector('.loading');
+                load.classList.add('fade');
+                setTimeout(()=>{
+                    load.classList.add('hide');
+                }, 1100);
 
             }); // End map.on()
 
